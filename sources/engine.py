@@ -15,7 +15,7 @@ width,height = os.get_terminal_size()
 height-=1
 pixelBuffer = [' ']*(width*height-width)
 camPosX = 0
-camPosY = 1
+camPosY = 3
 camPosZ = 0
 camRotX = 0
 camRotY = 0
@@ -26,7 +26,7 @@ lPosZ = 0
 
 
 focalLengh = 1.5
-color = ".'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
+color = ".'`-_^:,\"~|!\\/;+><rvcL)(lYi?IC][}{xnuztwoaJfhkZbjp1XUqdmMWO#0Q&8%B$@"
 
 # screen
 def clear(char):
@@ -90,7 +90,7 @@ def inZ(planeNormal, planePoint,tri):
 # transform
 
 def getChar(value):
-    return color[round(value*68)] if value>=0 else "."
+    return color[round(value*67)] if value>=0 else "."
 
 def clipping(tri):
     v = tri.copy()
@@ -170,7 +170,7 @@ def triangle3D(tri):
         line2 = SubVec3(tri2[2],tri2[0])
         norm = normalize(crossProd(line1,line2))
         if dot(norm,SubVec3(tri2[0],[camPosX,camPosY,camPosZ])) < 0:
-            lum = getChar(dot(norm,normalize((lPosX,lPosY,lPosZ))))
+            lum = getChar(dot(norm,normalize(SubVec3((lPosX,lPosY,lPosZ),tri2[0]))))
             v = [projection(rotationx(rotationy(SubVec3(i,(camPosX,camPosY,camPosZ))))) for i in tri2]
             triangle(v,lum)
 
@@ -216,42 +216,4 @@ def scale(m,l):
     mesh = []
     for tri in m:
         mesh.append([MultScal(l,tri[0]),MultScal(l,tri[1]),MultScal(l,tri[2])])
-    return mesh
-
-def checkSameMesh(m1,m2):
-    v1 = []
-    v2 = []
-    [v1.append(i) for sl in m1 for i in sl if i not in v1]
-    [v2.append(i) for sl in m2 for i in sl if i not in v2]
-    for v in v1:
-        if not v in v2:
-            return False
-    return True
-
-def removeFaces2(m):
-    mesh = []
-    for i in range(len(m)//2):
-        face = [m[2*i],m[2*i+1]]
-        check = True
-        for j in range(len(m)//2):
-            face1 = [m[2*j],m[2*j+1]]
-            if checkSameMesh(face,face1) and i!=j:
-                check =False
-                break
-        if check:
-            mesh+=face
-    return mesh
-
-def removeFaces(m,cube):
-    mesh = []
-    for i in range(len(cube)//2):
-        face = [cube[2*i],cube[2*i+1]]
-        check = True
-        for j in range(len(m)//2):
-            face1 = [m[2*j],m[2*j+1]]
-            if checkSameMesh(face,face1) and i!=j:
-                check =False
-                break
-        if check:
-            mesh+=face
     return mesh
